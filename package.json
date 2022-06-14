@@ -2,17 +2,20 @@
   "name": "expressjs",
   "private": true,
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "author": "Jake Runzer",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon src/server.js",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "method-override": "^3.0.0",
+    "request": "^2.88.2",
+    "venom-bot": "^4.2.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
