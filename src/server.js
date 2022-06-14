@@ -2,8 +2,11 @@
 // import { create, Whatsapp } from 'venom-bot';
 var venom = require("venom-bot");
 var globalClient;
-var QR_PATH = "/tmp/out.png";
+var QR_PATH = "out.png";
 var API_TOKEN = process.env.API_TOKEN;
+var PORT = process.env.PORT || 3333;
+var INSTANCE_ID = process.env.INSTANCE_ID || "12689";
+var SESSION_NAME = process.env.SESSION_NAME || INSTANCE_ID;
 var qrBuffer;
 var request = require("request");
 //const { decode } = require("punycode");
@@ -23,7 +26,7 @@ const messageHandler = (message) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      instanceId: "12689",
+      instanceId: INSTANCE_ID,
       messages: [
         {
           id: message.id,
@@ -47,7 +50,7 @@ const messageHandler = (message) => {
 
 venom
   .create({
-    session: "session-name3",
+    session: "session-" + SESSION_NAME,
     catchQR: function (base64Qr, asciiQR) {
       //console.log(asciiQR); // Optional to log the QR in the terminal
       var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
@@ -122,6 +125,6 @@ router.post("/:instanceNumber/sendMessage", function (req, res) {
   res.send(globalClient.sendText(req.body.chatId, req.body.body));
 });
 app.use(router);
-app.listen(3001, function () {
-  console.log("Node server running on http://localhost:3001");
+app.listen(PORT, function () {
+  console.log("Node server running on http://localhost:" + PORT);
 });
