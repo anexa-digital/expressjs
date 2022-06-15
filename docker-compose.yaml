@@ -3,7 +3,7 @@ services:
   node:
     image: "wazad:latest"
     ports:
-      - "33001:3333"
+      - "80:3333"
     environment:
       - API_TOKEN=ij238yh23y6rhg347tfmz1057gf
       - PORT=3333

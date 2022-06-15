@@ -121,7 +121,8 @@ app.get("/qr", function (req, res) {
 });
 
 router.post("/:instanceNumber/sendMessage", function (req, res) {
-  res.send(globalClient.sendText(req.body.chatId, req.body.body));
+  var recipient = req.body.chatId || req.body.phone;
+  res.send(globalClient.sendText(recipient, req.body.body));
 });
 app.use(router);
 app.listen(PORT, function () {
