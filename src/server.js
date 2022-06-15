@@ -2,17 +2,20 @@
 // import { create, Whatsapp } from 'venom-bot';
 var venom = require("venom-bot");
 var globalClient;
-var QR_PATH = "out.png";
+
 var API_TOKEN = process.env.API_TOKEN;
 var PORT = process.env.PORT || 3333;
 var INSTANCE_ID = process.env.INSTANCE_ID || "12689";
+var QR_PATH = `/tmpapp/qr${INSTANCE_ID}.png`;
 var SESSION_NAME = process.env.SESSION_NAME || INSTANCE_ID;
+var webhookUrl = process.env.WEBHOOK_URL || "https://crm-c1.axioma.bio/inboundchat";
 var qrBuffer;
 var request = require("request");
 //const { decode } = require("punycode");
-var webhookUrl = "https://crm-c1.axioma.bio/inboundchat";
+
 
 const messageHandler = (message) => {
+  decodedMessage = message.body;
   if (message.type !== "chat") {
     decodedMessage =
       message.type +
@@ -73,9 +76,9 @@ venom
         }
       );
     },
-    useChrome: false,
-    browserArgs: ["--no-sandbox"],
-    multidevice: true, // for version not multidevice use false.(default: true)
+    multidevice: true,
+    folderNameToken: 'tokens',
+    mkdirFolderToken: '/tmpapp',
   })
   .then(function (client) {
     return start(client);
@@ -115,10 +118,6 @@ router.get("/", function (req, res) {
 app.get("/qr", function (req, res) {
   auth(req, res);
   res.sendFile(QR_PATH);
-});
-
-app.get("/qr2", function (req, res) {
-  res.send(qrBuffer);
 });
 
 router.post("/:instanceNumber/sendMessage", function (req, res) {
