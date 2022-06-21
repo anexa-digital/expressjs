@@ -3,25 +3,35 @@
 var venom = require("venom-bot");
 var globalClient;
 
+
 var API_TOKEN = process.env.API_TOKEN;
 var PORT = process.env.PORT || 3333;
-var INSTANCE_ID = process.env.INSTANCE_ID || "12689";
-var QR_PATH = `/tmpapp/qr${INSTANCE_ID}.png`;
+var BASE_URL = process.env.BASE_URL;
+var INSTANCE_ID = process.env.INSTANCE_ID || "123";
+var TEMP_PATH = '/tmpapp'
+var QR_PATH = `${TEMP_PATH}/qr${INSTANCE_ID}.png`;
 var SESSION_NAME = process.env.SESSION_NAME || INSTANCE_ID;
-var webhookUrl = process.env.WEBHOOK_URL || "https://crm-c1.axioma.bio/inboundchat";
+var webhookUrl = process.env.WEBHOOK_URL || "http://192.168.21.128:8080/inboundchat";
 var qrBuffer;
 var request = require("request");
+var mime = require('mime-types');
+const fs = require('fs');
 //const { decode } = require("punycode");
 
 
-const messageHandler = (message) => {
+const messageHandler = async (message) => {
+  //console.log(message);
   decodedMessage = message.body;
-  if (message.type !== "chat") {
-    decodedMessage =
-      message.type +
-      " - Tipo de mensaje aun no soportado - " +
-      message.timestamp;
+  if (message.type == 'ptt' || message.type =='document' || message.isMedia === true || message.isMMS === true) {
+    const buffer = await globalClient.decryptFile(message);
+    const fileName = `${message.id}.${mime.extension(message.mimetype)}`;
+    await fs.writeFile(`${TEMP_PATH}/${fileName}`, buffer, (err) => {
+      console.log(err);
+    });
+    decodedMessage = `${BASE_URL}/media?file=${fileName}`
   }
+  
+
   var options = {
     method: "POST",
     url: webhookUrl,
@@ -45,7 +55,8 @@ const messageHandler = (message) => {
       ],
     }),
   };
-  request(options, function (error, response) {
+
+  await request(options, function (error, response) {
     if (error) throw new Error(error);
     console.log(response.body);
   });
@@ -118,6 +129,10 @@ router.get("/", function (req, res) {
 app.get("/qr", function (req, res) {
   auth(req, res);
   res.sendFile(QR_PATH);
+});
+
+app.get("/media", function (req, res) {
+  res.sendFile(`${TEMP_PATH}/${req.query.file}`);
 });
 
 router.post("/:instanceNumber/sendMessage", function (req, res) {

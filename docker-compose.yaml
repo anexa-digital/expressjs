@@ -3,10 +3,11 @@ services:
   node:
     image: "wazad:latest"
     ports:
-      - "80:3333"
+      - "3334:3333"
     environment:
       - API_TOKEN=ij238yh23y6rhg347tfmz1057gf
       - PORT=3333
-      - INSTANCE_ID=12689
-      - WEBHOOK_URL=https://crm-c1.axioma.bio/inboundchat
+      - INSTANCE_ID=123
+      - WEBHOOK_URL=http://192.168.21.128:8080/inboundchat
+      - BASE_URL=http://localhost:3334
 
